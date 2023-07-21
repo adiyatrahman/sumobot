@@ -11,9 +11,9 @@ Button::Button(const int pin) : m_pin(pin)
 void Button::init()
 {
 
-  pinMode(m_pin, INPUT);
+  pinMode(m_pin, INPUT_PULLUP);
   // set begin state
-  m_lastButtonState = read();
+  m_lastButtonState = HIGH;
 }
 
 
@@ -66,7 +66,7 @@ bool Button::onPress()
   //read button state. '1' is pushed, '0' is not pushed.
   bool reading = read();
   // If the switch changed, due to noise or pressing:
-  if (reading == HIGH && m_lastButtonState == LOW) {
+  if (reading == LOW && m_lastButtonState == HIGH) {
     // reset the debouncing timer
     m_lastDebounceTime = millis();
     m_pressFlag = 1;

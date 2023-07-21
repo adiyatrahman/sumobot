@@ -44,13 +44,13 @@ void setup()
 {
     // Setup Serial which is useful for debugging
     // Use the Serial Monitor to view printed messages
-    Serial.begin(9600);
+    Serial.begin(115200);
     while (!Serial) ; // wait for serial port to connect. Needed for native USB
     Serial.println("start");
     
     pinMode(IRLINEFOLLOW_PIN_OUT, INPUT);
     pushButton.init();
-    menuOption = menu();
+    // menuOption = menu();
     
 }
 
@@ -108,7 +108,7 @@ void loop()
     //if button is pressed function will return HIGH (1). if not function will return LOW (0). 
     //for debounce funtionality try also pushButton.onPress(), .onRelease() and .onChange().
     //if debounce is not working properly try changing 'debounceDelay' variable in Button.h
-    bool pushButtonVal = pushButton.read();
+    bool pushButtonVal = pushButton.onChange();
     Serial.print(F("Val: ")); Serial.println(pushButtonVal);
 
     }
