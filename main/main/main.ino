@@ -24,6 +24,7 @@
 // Global variables and defines
 
 //function declarations
+void back_away();
 void turnRight();
 void turnLeft();
 void attack();
@@ -42,6 +43,7 @@ Button pushButton(PUSHBUTTON_PIN_2);
 const int timeout = 10000;       //define timeout of 10 sec
 char menuOption = 0;
 long time0;
+const int lineThreshold = 700;
 
 
 void setup() {
@@ -50,7 +52,7 @@ void setup() {
     Serial.begin(9600);
     while (!Serial) ; // wait for serial port to connect. Needed for native USB
     
-    // pinMode(IRLINEFOLLOW_PIN_OUT, INPUT);
+    pinMode(IRLINEFOLLOW_PIN_OUT, INPUT);
     pushButton.init();
 
     while (!pushButton.onPress()) {
@@ -60,10 +62,11 @@ void setup() {
 
 void loop() {
   //while the button is not pressed, do nothing
-    int left_distance = hcsr04_l.ping_cm();
-    int front_distance = hcsr04_f.ping_cm();
-    int right_distance = hcsr04_r.ping_cm();
-
+    //int left_distance = hcsr04_l.ping_cm();
+  int front_distance = hcsr04_f.ping_cm();
+    //int right_distance = hcsr04_r.ping_cm();
+  int IRValue = analogRead(IRLINEFOLLOW_PIN_OUT);
+    /*
     while (left_distance > 30 && front_distance > 30 && right_distance > 30) {
         turnRight();
     }
@@ -77,8 +80,32 @@ void loop() {
         turnLeft();
       } 
     }
-
+    */
+  // turn around search for opponents
+  while (IRValue < lineThreshold && front_distance > 30) {  
+    turnRight();  
+  }
+  if (IRValue > lineThreshold ) {
+    // Stop the robot
+    back_away()
+  }
+  //if opponents found go forward
+  if (front_distance <30 && IRValue < lineThreshold) {
     attack();
+  }
+    
+
+
+}
+
+
+
+void back_away() {
+  dcMotorDriverL298.setMotorA(-200,1);
+  dcMotorDriverL298.setMotorB(-200,1);
+  delay(180);
+  turnRight();
+  delay(180);//turn 180 degrees to face center again
 }
 
 void turnRight() {
