@@ -1,8 +1,9 @@
 // Include Libraries
 #include "Arduino.h"
 #include "DCMDriverL298.h"
-#include "NewPing.h"
+//#include "NewPing.h"
 #include "Button.h"
+#include "MAFUltrasonicSensor.hpp"
 
 
 // Pin Definitions
@@ -12,12 +13,12 @@
 #define DCMOTORDRIVERL298_PIN_ENA	3
 #define DCMOTORDRIVERL298_PIN_INT3	6
 #define DCMOTORDRIVERL298_PIN_INT4	7
-#define HCSR04_1_PIN_TRIG	9
-#define HCSR04_1_PIN_ECHO	8
-#define HCSR04_2_PIN_TRIG	11
-#define HCSR04_2_PIN_ECHO	10
-#define HCSR04_3_PIN_TRIG	13
-#define HCSR04_3_PIN_ECHO	12
+//#define HCSR04_1_PIN_TRIG	9
+//#define HCSR04_1_PIN_ECHO	8
+//#define HCSR04_2_PIN_TRIG	11
+//#define HCSR04_2_PIN_ECHO	10
+//#define HCSR04_3_PIN_TRIG	13
+//#define HCSR04_3_PIN_ECHO	12
 #define IRLINEFOLLOW_PIN_OUT	A0
 #define PUSHBUTTON_PIN_2	A1
 
@@ -33,10 +34,12 @@ void startRoutine();
 
 // object initialization
 DCMDriverL298 dcMotorDriverL298(DCMOTORDRIVERL298_PIN_ENA,DCMOTORDRIVERL298_PIN_INT1,DCMOTORDRIVERL298_PIN_INT2,DCMOTORDRIVERL298_PIN_ENB,DCMOTORDRIVERL298_PIN_INT3,DCMOTORDRIVERL298_PIN_INT4);
-NewPing hcsr04_l(HCSR04_1_PIN_TRIG,HCSR04_1_PIN_ECHO);
-NewPing hcsr04_f(HCSR04_2_PIN_TRIG,HCSR04_2_PIN_ECHO);
-NewPing hcsr04_r(HCSR04_3_PIN_TRIG,HCSR04_3_PIN_ECHO);
+//NewPing hcsr04_l(HCSR04_1_PIN_TRIG,HCSR04_1_PIN_ECHO);
+//NewPing hcsr04_f(HCSR04_2_PIN_TRIG,HCSR04_2_PIN_ECHO);
+//NewPing hcsr04_r(HCSR04_3_PIN_TRIG,HCSR04_3_PIN_ECHO);
 Button pushButton(PUSHBUTTON_PIN_2);
+mtrn3100::UltrasonicSensor sensor(11, 10);
+mtrn3100::MAFUltrasonicSensor<100> maf_sensor(sensor);
 
 
 // define vars for testing menu
@@ -63,9 +66,21 @@ void setup() {
 void loop() {
   //while the button is not pressed, do nothing
     //int left_distance = hcsr04_l.ping_cm();
-  int front_distance = hcsr04_f.ping_cm();
+  maf_sensor.sample();
+    if (maf_sensor.isReady()) {
+        //Serial.print("Ultrasonic:");
+        //Serial.print(sensor.echo());
+        //Serial.print(",");
+        Serial.println(maf_sensor.value());
+    } else {
+      //Serial.print(maf_sensor.capacity());
+      Serial.println("Not ready");
+    }
+  int front_distance = maf_sensor.value();
     //int right_distance = hcsr04_r.ping_cm();
   int IRValue = analogRead(IRLINEFOLLOW_PIN_OUT);
+  Serial.print(IRValue);
+  
     /*
     while (left_distance > 30 && front_distance > 30 && right_distance > 30) {
         turnRight();
