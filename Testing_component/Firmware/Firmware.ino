@@ -35,7 +35,7 @@ Button pushButton(PUSHBUTTON_PIN_2);
 
 
 // define vars for testing menu
-const int timeout = 10000;       //define timeout of 10 sec
+const int timeout = 30000;       //define timeout of 10 sec
 char menuOption = 0;
 long time0;
 

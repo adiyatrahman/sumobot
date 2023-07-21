@@ -39,7 +39,7 @@ DCMDriverL298 dcMotorDriverL298(DCMOTORDRIVERL298_PIN_ENA,DCMOTORDRIVERL298_PIN_
 //NewPing hcsr04_r(HCSR04_3_PIN_TRIG,HCSR04_3_PIN_ECHO);
 Button pushButton(PUSHBUTTON_PIN_2);
 mtrn3100::UltrasonicSensor sensor(11, 10);
-mtrn3100::MAFUltrasonicSensor<100> maf_sensor(sensor);
+mtrn3100::MAFUltrasonicSensor<5> maf_sensor(sensor);
 
 
 // define vars for testing menu
@@ -52,15 +52,15 @@ const int lineThreshold = 700;
 void setup() {
   // Setup Serial which is useful for debugging
     // Use the Serial Monitor to view printed message
-    Serial.begin(9600);
+    Serial.begin(115200);
     while (!Serial) ; // wait for serial port to connect. Needed for native USB
     
     pinMode(IRLINEFOLLOW_PIN_OUT, INPUT);
-    pushButton.init();
-
-    while (!pushButton.onPress()) {
-    }
-    startRoutine();
+    // pushButton.init();
+    delay(20000);
+    // while (!pushButton.onPress()) {
+    // }
+    // startRoutine();
 }
 
 void loop() {
@@ -72,6 +72,7 @@ void loop() {
         //Serial.print(sensor.echo());
         //Serial.print(",");
         Serial.println(maf_sensor.value());
+        // Serial.println(sensor.echo());
     } else {
       //Serial.print(maf_sensor.capacity());
       Serial.println("Not ready");
@@ -79,7 +80,8 @@ void loop() {
   int front_distance = maf_sensor.value();
     //int right_distance = hcsr04_r.ping_cm();
   int IRValue = analogRead(IRLINEFOLLOW_PIN_OUT);
-  Serial.print(IRValue);
+  // Serial.print("IR Value: ");
+  // Serial.println(IRValue);
   
     /*
     while (left_distance > 30 && front_distance > 30 && right_distance > 30) {
@@ -97,15 +99,15 @@ void loop() {
     }
     */
   // turn around search for opponents
-  while (IRValue < lineThreshold && front_distance > 30) {  
+  while (IRValue < lineThreshold && front_distance > 150) {  
     turnRight();  
   }
   if (IRValue > lineThreshold ) {
     // Stop the robot
-    back_away()
+    back_away();
   }
   //if opponents found go forward
-  if (front_distance <30 && IRValue < lineThreshold) {
+  if (front_distance <150 && IRValue < lineThreshold) {
     attack();
   }
     
@@ -116,21 +118,21 @@ void loop() {
 
 
 void back_away() {
-  dcMotorDriverL298.setMotorA(-200,1);
-  dcMotorDriverL298.setMotorB(-200,1);
-  delay(180);
+  dcMotorDriverL298.setMotorA(-250,1);
+  dcMotorDriverL298.setMotorB(-250,1);
+  delay(200);
   turnRight();
-  delay(180);//turn 180 degrees to face center again
+  delay(800);//turn 180 degrees to face center again
 }
 
 void turnRight() {
-    dcMotorDriverL298.setMotorA(200,1);
-    dcMotorDriverL298.setMotorB(200,1);
+    dcMotorDriverL298.setMotorA(250,1);
+    dcMotorDriverL298.setMotorB(250,0);
 }
 
 void turnLeft() {
-    dcMotorDriverL298.setMotorA(0,1);
-    dcMotorDriverL298.setMotorB(200,1);
+    dcMotorDriverL298.setMotorA(250,0);
+    dcMotorDriverL298.setMotorB(250,1);
 }
 
 void attack() {
@@ -156,13 +158,13 @@ void startRoutine() {
   // Turn left until opponent is detected.
   dcMotorDriverL298.setMotorA(0,1);
   dcMotorDriverL298.setMotorB(200,1);
-  uint32_t startTimestamp = millis();
-  while (hcsr04_f.ping_cm() > 30) {
-    // Quit if opponent is not found after timeout.
-    if (millis() - startTimestamp > 400) {
-      break;
-    }
-  }
+  // uint32_t startTimestamp = millis();
+  // while (hcsr04_f.ping_cm() > 30) {
+  //   // Quit if opponent is not found after timeout.
+  //   if (millis() - startTimestamp > 400) {
+  //     break;
+  //   }
+  // }
   
  }
 

@@ -7,22 +7,27 @@ namespace mtrn3100 {
 class UltrasonicSensor {
 public:
     // COMPLETE THIS CONSTRUCTOR.
-    UltrasonicSensor(uint8_t trigger_pin, uint8_t echo_pin) : trigger_pin(trigger_pin), echo_pin(echo_pin) {
-      pinMode(trigger_pin, OUTPUT);
-      pinMode(echo_pin, INPUT);
+    UltrasonicSensor(uint8_t trigger_pin, uint8_t echo_pin) 
+        : trigger_pin(trigger_pin), echo_pin(echo_pin) {
+            pinMode(trigger_pin, OUTPUT);
+            pinMode(echo_pin, INPUT);
     }
 
-    // COMPLETE THIS FUNCTION.
-    float echo() const { 
-      // clear trigger_pin
-      digitalWrite(trigger_pin, LOW);
-      delayMicroseconds(5);
-      // send signal
-      digitalWrite(trigger_pin, HIGH);
-      delayMicroseconds(10);
-      digitalWrite(trigger_pin, LOW);
-      // Determine time of flight and distance
-      return 0.1715 * pulseIn(echo_pin, HIGH); 
+    float echo() const {
+        // Send the trigger pulse
+        digitalWrite(trigger_pin, LOW);
+        delayMicroseconds(2);
+        digitalWrite(trigger_pin, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(trigger_pin, LOW);
+
+        // Measure the duration of the echo pulse
+        long duration = pulseIn(echo_pin, HIGH);
+
+        // Calculate the distance based on the speed of sound
+        float distance = duration * 0.343 / 2;
+
+        return distance;
     }
 
 private:
